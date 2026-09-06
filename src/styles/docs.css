@@ -1054,11 +1054,16 @@ a:hover {
 
 /* ── 搜尋 ─────────────────────────────────────────────────────────────── */
 
+/*
+ * CommandPalette 的 trigger 寫死了 min-height: 3.5rem，那是獨立控制項的尺寸；
+ * 放進頁首會比旁邊的圖示鈕高出 16px。min-height 贏過 height，所以兩個都要壓。
+ */
 .search-trigger {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-2);
 	height: var(--control-height-compact-sm);
+	min-height: var(--control-height-compact-sm);
 	padding-inline: var(--space-3);
 	background: var(--control-surface);
 	border: var(--border-width-hairline) solid var(--border-control);
@@ -1089,6 +1094,13 @@ a:hover {
 	.search-trigger__key {
 		display: none;
 	}
+}
+
+.callout__icon {
+	margin-inline-end: var(--space-2);
+	/* emoji 的基線比中文字低，稍微往上提才會跟標題對齊。 */
+	font-size: 0.9em;
+	line-height: 1;
 }
 
 .search-backdrop {
@@ -1258,4 +1270,69 @@ a:hover {
 	border-block-start: var(--border-width-hairline) solid var(--divider-subtle);
 	color: var(--text-secondary);
 	font-size: var(--font-size-sm);
+}
+
+/* ── 頁尾 ─────────────────────────────────────────────────────────────── */
+
+/*
+ * 在文件頁裡，頁尾是 .page 這個格線的一列，橫跨內容與目錄。
+ * 讓它自己排一列而不是塞進內容欄，才會跟上下頁那一排切齊。
+ */
+.page > .site-footer {
+	grid-column: 1 / -1;
+}
+
+.site-footer {
+	margin-block-start: var(--space-12);
+	padding-block-start: var(--space-8);
+	border-block-start: var(--border-width-hairline) solid var(--divider-subtle);
+}
+
+.site-footer__inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-4) var(--space-8);
+}
+
+.site-footer__name {
+	color: var(--text-title);
+	font-weight: var(--font-weight-medium);
+	text-decoration: none;
+}
+
+.site-footer__name:hover {
+	color: var(--text-accent);
+}
+
+.site-footer__note {
+	margin: var(--space-1) 0 0;
+	color: var(--text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.site-footer__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-3) var(--space-5);
+	font-size: var(--font-size-sm);
+}
+
+.site-footer__link {
+	color: var(--text-secondary);
+	text-decoration: none;
+}
+
+.site-footer__link:hover {
+	color: var(--text-accent);
+	text-decoration: underline;
+}
+
+/* 首頁沒有格線，自己對齊到跟內容一樣的寬度。 */
+.landing + .site-footer {
+	max-width: 60rem;
+	margin-inline: auto;
+	margin-block-start: 0;
+	padding: var(--space-8) var(--space-8) var(--space-12);
 }

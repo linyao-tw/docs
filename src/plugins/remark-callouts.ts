@@ -11,6 +11,20 @@ const KIND_LABEL: Record<CalloutKind, string> = {
 	note: "備註"
 };
 
+/**
+ * 標題前的圖示。
+ *
+ * 用 emoji 而不是 SVG：提示框的種類是靠顏色分辨的，而色弱的人分不出來，
+ * 光靠邊框顏色等於沒有標示。emoji 每個系統都有，也不必額外載入任何東西。
+ */
+const KIND_EMOJI: Record<CalloutKind, string> = {
+	tip: "💡",
+	info: "ℹ️",
+	warning: "⚠️",
+	danger: "🚨",
+	note: "📝"
+};
+
 const ALIASES: Record<string, CalloutKind> = {
 	tip: "tip",
 	info: "info",
@@ -100,7 +114,9 @@ export function remarkCallouts() {
 
 			children.unshift({
 				type: "html",
-				value: `<p class="callout__title">${escapeHtml(label)}</p>`
+				// emoji 標成 aria-hidden：標題文字已經說了這是提示還是警告，
+				// 讀螢幕的人不需要再聽到一次「燈泡」。
+				value: `<p class="callout__title"><span class="callout__icon" aria-hidden="true">${KIND_EMOJI[kind]}</span>${escapeHtml(label)}</p>`
 			} as never);
 		});
 	};

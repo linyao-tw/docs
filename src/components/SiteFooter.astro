@@ -1,0 +1,29 @@
+---
+const LINKS = [
+	{ label: "首頁", href: "https://linyao.tw/" },
+	{ label: "產品", href: "https://linyao.tw/products/" },
+	{ label: "服務", href: "https://linyao.tw/#services" }
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-pagefind-ignore>
+	<div class="site-footer__inner">
+		<div class="site-footer__brand">
+			<a class="site-footer__name" href="https://linyao.tw/">麟曜數位工作室</a>
+			<p class="site-footer__note">© {year} 麟曜數位工作室</p>
+		</div>
+
+		<nav class="site-footer__links" aria-label="麟曜數位工作室">
+			{
+				LINKS.map(link => (
+					<a class="site-footer__link" href={link.href}>
+						{link.label}
+					</a>
+				))
+			}
+			<a class="site-footer__link" href="mailto:contact@linyao.tw">contact@linyao.tw</a>
+		</nav>
+	</div>
+</footer>

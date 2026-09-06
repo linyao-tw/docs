@@ -2,6 +2,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@linyao.tw/ui";
 import { getCollection } from "astro:content";
 import Icon from "@/components/Icon.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
 import { hrefFor, PRODUCTS, productFor } from "@/lib/products";
 import "@/styles/docs.css";
@@ -40,16 +41,29 @@ const description = "麟曜數位工作室所有產品的文件。";
 
 		<script is:inline>
 			(() => {
-				const stored = (() => {
-					try {
-						return localStorage.getItem("linyao-docs-theme");
-					} catch {
-						return null;
-					}
-				})();
-				const theme = stored === "light" || stored === "dark" ? stored : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-				document.documentElement.setAttribute("data-lyds-theme", theme);
-				document.documentElement.style.colorScheme = theme;
+				const apply = () => {
+					const stored = (() => {
+						try {
+							return localStorage.getItem("linyao-docs-theme");
+						} catch {
+							return null;
+						}
+					})();
+					const theme = stored === "light" || stored === "dark" ? stored : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+					document.documentElement.setAttribute("data-lyds-theme", theme);
+					document.documentElement.style.colorScheme = theme;
+				};
+
+				apply();
+
+				/*
+				 * 客戶端導覽會把整份文件換掉，包含 <html> 上的屬性。
+				 *
+				 * 主題是執行時才寫上去的，伺服器輸出的 HTML 裡並沒有，所以換頁之後
+				 * 它就消失了 —— 選深色的人一點連結就跳回亮色。astro:after-swap 在
+				 * 新頁面繪製之前發出，在那裡重新套用才不會閃。
+				 */
+				document.addEventListener("astro:after-swap", apply);
 			})();
 		</script>
 	</head>
@@ -101,5 +115,7 @@ const description = "麟曜數位工作室所有產品的文件。";
 				給 AI 工具讀的版本：<a href="/llms.txt">llms.txt</a> 是全站索引，<a href="/llms-full.txt">llms-full.txt</a> 是完整內容。每一頁的網址加上 <code>.md</code> 就是它的 Markdown 原文。
 			</p>
 		</main>
+
+		<SiteFooter />
 	</body>
 </html>
