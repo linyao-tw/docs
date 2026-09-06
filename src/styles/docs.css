@@ -541,6 +541,12 @@ a:hover {
 .prose :not(pre) > code {
 	-webkit-box-decoration-break: clone;
 	box-decoration-break: clone;
+	/*
+	 * 行內 code 常常是網址或套件名，沒有空白可以斷行，在手機上會直接頂破版面。
+	 * 用 break-word 而不是 anywhere：後者會把 min-content 一起改掉，
+	 * 表格的欄寬是照那個算的，會被連帶壓窄。
+	 */
+	overflow-wrap: break-word;
 	padding: 0.15em 0.4em;
 	background: var(--background-inset);
 	border: var(--border-width-hairline) solid var(--divider-subtle);
