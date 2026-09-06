@@ -1,0 +1,44 @@
+---
+import Icon from "@/components/Icon.astro";
+
+interface Props {
+	/** 這一頁的 Markdown 版本，也是丟給 AI 的來源。 */
+	markdownUrl: string;
+	/** 絕對網址，貼進聊天視窗時對方才抓得到。 */
+	canonical: string;
+}
+
+const { markdownUrl, canonical } = Astro.props;
+
+const ask = `請閱讀 ${canonical} 這份文件，然後回答我的問題。`;
+const chatgpt = `https://chatgpt.com/?q=${encodeURIComponent(ask)}`;
+const claude = `https://claude.ai/new?q=${encodeURIComponent(ask)}`;
+---
+
+{
+	/*
+	把整頁的 Markdown 交出去，而不是讓人複製渲染後的 HTML。
+	表格、程式碼區塊與提示框在 HTML 複製之後都會散掉，Markdown 則是原樣。
+*/
+}
+<div class="page-actions" data-markdown={markdownUrl} data-pagefind-ignore>
+	<button class="page-actions__button" type="button" data-copy-markdown>
+		<Icon name="copy" weight="bold" size="0.875rem" />
+		<span>複製 Markdown</span>
+	</button>
+
+	<a class="page-actions__button" href={markdownUrl}>
+		<Icon name="file-text" weight="bold" size="0.875rem" />
+		<span>檢視 Markdown</span>
+	</a>
+
+	<a class="page-actions__button" href={chatgpt} rel="noreferrer noopener" target="_blank">
+		<Icon name="chat-circle" weight="bold" size="0.875rem" />
+		<span>在 ChatGPT 開啟</span>
+	</a>
+
+	<a class="page-actions__button" href={claude} rel="noreferrer noopener" target="_blank">
+		<Icon name="sparkle" weight="bold" size="0.875rem" />
+		<span>在 Claude 開啟</span>
+	</a>
+</div>

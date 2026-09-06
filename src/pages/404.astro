@@ -1,0 +1,19 @@
+---
+import DocsLayout from "@/layouts/DocsLayout.astro";
+import { PRODUCTS, hrefFor } from "@/lib/products";
+---
+
+<DocsLayout id="huan/index" title="找不到這個頁面" description="這個網址不存在，或是文件搬過家了。" headings={[]}>
+	<p>這個網址不存在，或是文件搬過家了。</p>
+	<p>可以從這幾個地方重新開始，或用右上角的搜尋找你要的內容：</p>
+	<ul>
+		<li><a href="/">所有產品</a></li>
+		{
+			PRODUCTS.map(product => (
+				<li>
+					<a href={hrefFor(product.sections[0]!.entry)}>{product.name}</a>：{product.tagline}
+				</li>
+			))
+		}
+	</ul>
+</DocsLayout>

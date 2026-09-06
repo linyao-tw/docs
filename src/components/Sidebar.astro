@@ -1,0 +1,101 @@
+---
+import { ProductSwitcher } from "@/components/ProductSwitcher";
+import { hrefFor, isGroup, isSamePage, PRODUCTS, type NavNode, type Product, type Section } from "@/lib/products";
+
+interface Props {
+	product: Product;
+	section: Section;
+	currentId: string;
+}
+
+const { product, section, currentId } = Astro.props;
+const nav: NavNode[] = section.nav;
+
+const products = PRODUCTS.map(item => ({ id: item.id, name: item.name, href: hrefFor(item.sections[0]!.entry) }));
+
+function containsCurrent(node: NavNode): boolean {
+	return isGroup(node) ? node.items.some(item => isSamePage(item.id, currentId)) : isSamePage(node.id, currentId);
+}
+---
+
+<aside class="sidebar" id="sidebar" data-open="false">
+	{
+		/*
+		產品切換器擺在側欄最上面，像 workspace 一樣先決定「在哪個產品裡」，
+		底下才是那個產品的選單。這是唯一需要自己管狀態的側欄元件，
+		所以只有它是 island，其餘導覽都是靜態 HTML。
+	*/
+	}
+	<div class="sidebar__product">
+		<ProductSwitcher client:idle products={products} current={product.id} />
+	</div>
+
+	{
+		/*
+		區塊切換在手機上從頁首移到這裡。
+		375px 的頁首放不下「選單 + 品牌 + 兩個區塊 + 搜尋 + 主題 + GitHub」，
+		硬擠的結果是整頁被撐到 449px 寬。
+		只有一個區塊的產品不需要切換器。
+	*/
+	}
+	{
+		product.sections.length > 1 && (
+			<nav class="sidebar__sections" aria-label="文件區塊">
+				{product.sections.map(item => (
+					<a class="sidebar__section-link" href={hrefFor(item.entry)} aria-current={item.label === section.label ? "true" : undefined}>
+						{item.label}
+					</a>
+				))}
+			</nav>
+		)
+	}
+
+	<nav aria-label="文件導覽">
+		{
+			nav.map(node =>
+				isGroup(node) ? (
+					<div class="sidebar__group">
+						{node.collapsed ? (
+							<details open={containsCurrent(node) || undefined}>
+								<summary class="sidebar__group-label sidebar__summary">
+									<svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+										<path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+									{node.label}
+								</summary>
+								<ul class="sidebar__list">
+									{node.items.map(item => (
+										<li>
+											<a class="sidebar__link" href={hrefFor(item.id)} aria-current={isSamePage(item.id, currentId) ? "page" : undefined}>
+												{item.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</details>
+						) : (
+							<>
+								<p class="sidebar__group-label">{node.label}</p>
+								<ul class="sidebar__list">
+									{node.items.map(item => (
+										<li>
+											<a class="sidebar__link" href={hrefFor(item.id)} aria-current={isSamePage(item.id, currentId) ? "page" : undefined}>
+												{item.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</>
+						)}
+					</div>
+				) : (
+					<a class="sidebar__leaf" href={hrefFor(node.id)} aria-current={isSamePage(node.id, currentId) ? "page" : undefined}>
+						{node.label}
+					</a>
+				)
+			)
+		}
+	</nav>
+</aside>
+
+<div class="scrim" id="sidebar-scrim" data-open="false"></div>

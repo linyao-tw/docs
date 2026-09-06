@@ -1,0 +1,10 @@
+# 單一套件，這裡只是為了宣告哪些相依可以跑安裝腳本。
+packages: []
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+
+# UI 套件是自家發布的，不必等 npm 的最短上架時間。
+minimumReleaseAgeExclude:
+  - "@linyao.tw/ui@1.3.0"

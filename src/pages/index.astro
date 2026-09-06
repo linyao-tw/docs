@@ -1,0 +1,105 @@
+---
+import { Card, CardDescription, CardHeader, CardTitle } from "@linyao.tw/ui";
+import { getCollection } from "astro:content";
+import Icon from "@/components/Icon.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import { hrefFor, PRODUCTS, productFor } from "@/lib/products";
+import "@/styles/docs.css";
+
+const entries = await getCollection("docs");
+
+/*
+ * 卡片上的頁數是數出來的，不是寫死的。
+ *
+ * 手寫的數字在加了三頁之後就會變成謊言，而說明文件上的謊言比沒有數字更糟。
+ */
+const products = PRODUCTS.map(product => ({
+	...product,
+	href: hrefFor(product.sections[0]!.entry),
+	pages: entries.filter(entry => productFor(entry.id)?.id === product.id).length
+}));
+
+const canonical = new URL("/", Astro.site).href;
+const title = "麟曜數位工作室 文件";
+const description = "麟曜數位工作室所有產品的文件。";
+---
+
+<!doctype html>
+<html lang="zh-TW">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+
+		<script is:inline>
+			(() => {
+				const stored = (() => {
+					try {
+						return localStorage.getItem("linyao-docs-theme");
+					} catch {
+						return null;
+					}
+				})();
+				const theme = stored === "light" || stored === "dark" ? stored : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+				document.documentElement.setAttribute("data-lyds-theme", theme);
+				document.documentElement.style.colorScheme = theme;
+			})();
+		</script>
+	</head>
+
+	<body>
+		<header class="site-header">
+			<div class="site-header__rail">
+				<a class="site-brand" href="/">
+					<span class="site-brand__mark">麟曜</span>
+					<span class="site-brand__label">文件</span>
+				</a>
+				<div class="site-header__spacer"></div>
+				<div class="site-header__actions">
+					<ThemeToggle />
+					<a class="icon-button" href="https://github.com/linyao-tw" rel="noreferrer noopener" target="_blank" aria-label="在 GitHub 上檢視原始碼">
+						<Icon name="github-logo" weight="bold" />
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<main class="landing" id="content">
+			<h1 class="landing__title">文件</h1>
+			<p class="landing__lead">麟曜數位工作室所有產品的說明文件。選一個產品開始。</p>
+
+			<ul class="landing__grid">
+				{
+					products.map(product => (
+						<li>
+							{/* 沒有互動，所以不加 client:*：Card 在建置時就變成 HTML，這一頁不含任何 React。 */}
+							<Card variant="outline" size="lg" className="landing__card">
+								<a class="landing__link" href={product.href}>
+									<CardHeader>
+										<span class="landing__icon">
+											<Icon name={product.icon} weight="bold" size="1.5rem" />
+										</span>
+										<CardTitle level={2}>{product.name}</CardTitle>
+										<CardDescription>{product.tagline}</CardDescription>
+									</CardHeader>
+									<span class="landing__meta">{product.pages} 篇文件</span>
+								</a>
+							</Card>
+						</li>
+					))
+				}
+			</ul>
+
+			<p class="landing__ai">
+				給 AI 工具讀的版本：<a href="/llms.txt">llms.txt</a> 是全站索引，<a href="/llms-full.txt">llms-full.txt</a> 是完整內容。每一頁的網址加上 <code>.md</code> 就是它的 Markdown 原文。
+			</p>
+		</main>
+	</body>
+</html>
