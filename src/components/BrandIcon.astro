@@ -1,0 +1,39 @@
+---
+/**
+ * 內嵌 public/icon/ 底下的品牌標誌。
+ *
+ * 用內嵌而不是 <img>：這幾個標誌要跟著主題走，外部圖片改不了顏色。
+ * ChatGPT 的原始檔沒有任何 fill，直接放進深色頁面會是一片看不見的黑。
+ */
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+interface Props {
+	/** public/icon/<name>.svg 的檔名，不含副檔名。 */
+	name: string;
+	size?: string;
+	/**
+	 * 改用 currentColor。
+	 *
+	 * ChatGPT 的標誌本來就是單色的，跟著文字顏色走才會在亮／深兩種主題下都看得見；
+	 * Claude 的標誌有自己的品牌色，保持原樣。
+	 */
+	mono?: boolean;
+}
+
+const { name, size = "1rem", mono = false } = Astro.props;
+
+const raw = readFileSync(resolve("public/icon", `${name}.svg`), "utf8");
+
+const svg = raw
+	.replace(/<\?xml[^>]*\?>/, "")
+	.replace(/<!--[\s\S]*?-->/g, "")
+	// 原始檔帶著 Tailwind 的 class，這個站台沒有 Tailwind，留著只是雜訊。
+	.replace(/\sclass="[^"]*"/g, "")
+	.replace(/\swidth="[^"]*"/, "")
+	.replace(/\sheight="[^"]*"/, "")
+	.replace(/<svg /, `<svg width="${size}" height="${size}" aria-hidden="true" focusable="false" ${mono ? 'fill="currentColor" ' : ""}`)
+	.trim();
+---
+
+<Fragment set:html={svg} />

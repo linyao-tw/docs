@@ -1097,10 +1097,11 @@ a:hover {
 }
 
 .callout__icon {
+	display: inline-flex;
+	/* SVG 是行內元素，會坐在基線上；用 flex 置中才會跟標題文字的中線對齊。 */
+	align-items: center;
 	margin-inline-end: var(--space-2);
-	/* emoji 的基線比中文字低，稍微往上提才會跟標題對齊。 */
-	font-size: 0.9em;
-	line-height: 1;
+	vertical-align: -0.2em;
 }
 
 .search-backdrop {
@@ -1127,34 +1128,64 @@ a:hover {
 
 .search-input {
 	width: 100%;
-	padding: var(--space-4) var(--space-5);
+	/* 函式庫的 input 自帶 min-height，再加上下內距會疊成一個很高的盒子。 */
+	min-height: var(--control-height-sm);
+	padding: 0 var(--space-5);
 	background: transparent;
 	border: 0;
 	border-block-end: var(--border-width-hairline) solid var(--divider-subtle);
+	border-radius: 0;
 	color: var(--text-primary);
 	font-family: inherit;
 	font-size: var(--font-size-md);
 }
 
-.search-input:focus {
+/*
+ * 拿掉函式庫的焦點環。
+ *
+ * 那個環是給獨立的輸入框用的，畫成一圈圓角 box-shadow；這裡的輸入框是滿版
+ * 貼齊的，環會變成一個和底色差一點點的圓角方框 —— 深色主題下看得見、
+ * 亮色主題下看不見，兩邊長得不一樣。
+ *
+ * 這不會讓鍵盤使用者失去線索：對話框一打開焦點就在這裡，游標本身就是指示，
+ * 而且此時沒有第二個可聚焦的東西可以混淆。
+ */
+.search-input:focus,
+.search-input:focus-visible {
 	outline: none;
+	box-shadow: none;
 }
 
 .search-list {
 	display: flex;
 	flex-direction: column;
+	/* flex 子項的預設 min-height 是 auto，不歸零的話這一層永遠不會捲動。 */
+	min-height: 0;
 	overflow-y: auto;
 	padding: var(--space-2);
 }
 
+/*
+ * 兩個宣告都是為了壓過函式庫的 item 樣式，不是多餘的。
+ *
+ * align-items：函式庫的 item 是給單行指令用的，設了 center；換成直排之後
+ * 標題會被置中，而摘要比標題寬，於是兩段文字左右不對齊。
+ *
+ * flex：list 是直排的 flex 容器，子項預設會被壓縮。八筆結果塞進固定高度的
+ * 清單時，每一筆都被擠成 46px，內容直接疊到下一筆上面 —— 畫面上看到的
+ * 就是一團互相重疊的文字。
+ */
 .search-result {
 	display: flex;
+	flex: none;
 	flex-direction: column;
+	align-items: stretch;
 	gap: var(--space-1);
 	padding: var(--space-3);
 	border-radius: var(--radius-sm);
 	color: var(--text-primary);
 	cursor: pointer;
+	text-align: start;
 	text-decoration: none;
 }
 
@@ -1187,7 +1218,12 @@ a:hover {
 	line-height: var(--line-height-snug);
 }
 
-.search-result__excerpt :global(mark) {
+/*
+ * Pagefind 用 <mark> 標命中的字，瀏覽器預設是螢光黃底黑字，在深色主題上
+ * 特別刺眼。這裡不能寫 :global() —— 那是 .astro scoped style 的語法，
+ * 出現在一般樣式表裡整條規則會被當成無效丟掉（原本就是這樣，所以一直是黃的）。
+ */
+.search-result__excerpt mark {
 	background: transparent;
 	color: var(--text-accent);
 	font-weight: var(--font-weight-medium);

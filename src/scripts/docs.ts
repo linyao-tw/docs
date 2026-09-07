@@ -124,10 +124,33 @@ function setupTableOfContents(): void {
 
 	const visible = new Set<string>();
 
+	/** 判定線的位置，要和下面 rootMargin 的上緣一致。 */
+	const READING_LINE = 80;
+
+	/*
+	 * 兩個標題之間也要有高亮。
+	 *
+	 * 判定區間只是畫面上方的一條窄帶，段落只要比它長，讀到中間時就沒有任何標題
+	 * 落在帶子裡 —— 整份目錄變灰，讀者剛好在最需要知道自己在哪的時候失去位置。
+	 * 沒有標題在帶子裡時，就取最後一個已經捲過去的那一個。
+	 */
+	const activeId = (): string | null => {
+		const inBand = headings.find(heading => visible.has(heading.id));
+		if (inBand) return inBand.id;
+
+		let passed: string | null = null;
+		for (const heading of headings) {
+			// 標題依文件順序排列，一旦碰到還在判定線下方的就不必再看了。
+			if (heading.getBoundingClientRect().top > READING_LINE) break;
+			passed = heading.id;
+		}
+		return passed;
+	};
+
 	const highlight = (): void => {
-		const active = headings.find(heading => visible.has(heading.id)) ?? null;
+		const active = activeId();
 		for (const link of links) link.removeAttribute("data-active");
-		if (active) byId.get(active.id)?.setAttribute("data-active", "true");
+		if (active) byId.get(active)?.setAttribute("data-active", "true");
 	};
 
 	const observer = new IntersectionObserver(
@@ -138,7 +161,7 @@ function setupTableOfContents(): void {
 			}
 			highlight();
 		},
-		{ rootMargin: "-80px 0px -70% 0px", threshold: 0 }
+		{ rootMargin: `-${READING_LINE}px 0px -70% 0px`, threshold: 0 }
 	);
 
 	for (const heading of headings) observer.observe(heading);

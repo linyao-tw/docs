@@ -1,4 +1,6 @@
 import type { Root } from "mdast";
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { visit } from "unist-util-visit";
 
 type CalloutKind = "tip" | "info" | "warning" | "danger" | "note";
@@ -14,16 +16,43 @@ const KIND_LABEL: Record<CalloutKind, string> = {
 /**
  * 標題前的圖示。
  *
- * 用 emoji 而不是 SVG：提示框的種類是靠顏色分辨的，而色弱的人分不出來，
- * 光靠邊框顏色等於沒有標示。emoji 每個系統都有，也不必額外載入任何東西。
+ * 種類原本只靠邊框顏色分辨，色弱的人等於沒有標示，因此每一種都給一個形狀。
+ * 用 Phosphor 和站台其他地方同一套家族，不用 emoji —— emoji 在每個系統上
+ * 長得都不一樣，而且和 Phosphor 的線條粗細對不起來。
  */
-const KIND_EMOJI: Record<CalloutKind, string> = {
-	tip: "💡",
-	info: "ℹ️",
-	warning: "⚠️",
-	danger: "🚨",
-	note: "📝"
+const KIND_ICON: Record<CalloutKind, string> = {
+	tip: "lightbulb",
+	info: "info",
+	warning: "warning",
+	danger: "warning-octagon",
+	note: "note"
 };
+
+const require = createRequire(import.meta.url);
+const iconCache = new Map<CalloutKind, string>();
+
+/**
+ * 在建置時把 Phosphor 的原始 SVG 讀進來內嵌。
+ *
+ * 這裡是 remark 外掛，拿不到 Astro 的元件，所以自己讀檔；每種提示框只讀一次。
+ */
+function iconSvg(kind: CalloutKind): string {
+	const cached = iconCache.get(kind);
+	if (cached !== undefined) return cached;
+
+	const name = KIND_ICON[kind];
+	const raw = readFileSync(require.resolve(`@phosphor-icons/core/assets/fill/${name}-fill.svg`), "utf8");
+	const svg = raw
+		.replace(/<\?xml[^>]*\?>/, "")
+		.replace(/<!--[\s\S]*?-->/g, "")
+		.replace(/\swidth="[^"]*"/, "")
+		.replace(/\sheight="[^"]*"/, "")
+		.replace(/<svg /, '<svg width="1.125em" height="1.125em" fill="currentColor" aria-hidden="true" focusable="false" ')
+		.trim();
+
+	iconCache.set(kind, svg);
+	return svg;
+}
 
 const ALIASES: Record<string, CalloutKind> = {
 	tip: "tip",
@@ -114,9 +143,9 @@ export function remarkCallouts() {
 
 			children.unshift({
 				type: "html",
-				// emoji 標成 aria-hidden：標題文字已經說了這是提示還是警告，
+				// 圖示標成 aria-hidden：標題文字已經說了這是提示還是警告，
 				// 讀螢幕的人不需要再聽到一次「燈泡」。
-				value: `<p class="callout__title"><span class="callout__icon" aria-hidden="true">${KIND_EMOJI[kind]}</span>${escapeHtml(label)}</p>`
+				value: `<p class="callout__title"><span class="callout__icon">${iconSvg(kind)}</span>${escapeHtml(label)}</p>`
 			} as never);
 		});
 	};
