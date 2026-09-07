@@ -1414,25 +1414,37 @@ a:hover {
 }
 
 .lightbox {
-	position: fixed;
-	inset: 0;
 	/*
-	 * 函式庫的對話框是靠 inset 50% 加上 translate(-50%, -50%) 置中的。
-	 * 這裡要的是整個畫面，inset 改成 0 之後那個位移就變成把面板整個推到
-	 * 左上角外面 —— 所以 translate 也必須一起歸零，不能只改 inset。
+	 * 順著函式庫的置中方式，不要跟它對打。
+	 *
+	 * 它是用 inset 50% 加 translate(-50%, -50%) 置中的。之前改成 inset: 0 再把
+	 * translate 歸零，等於同時推翻兩個宣告，只要它們其中一個的優先序有變動，
+	 * 面板就會整個飛到畫面外。這裡改成維持它的置中，只把尺寸撐成整個視窗 ——
+	 * 置中一個和視窗一樣大的面板，結果就是剛好蓋滿。
 	 */
-	translate: none;
 	display: grid;
 	grid-template-rows: auto 1fr auto;
-	width: 100%;
+	width: 100vw;
 	max-width: none;
-	height: 100%;
+	height: 100dvh;
 	max-height: none;
 	padding: var(--space-4);
 	background: transparent;
 	border: 0;
 	border-radius: 0;
 	box-shadow: none;
+	/*
+	 * 拖曳平移時瀏覽器會順手把圖片和標題選起來，整片反白跟著游標跑。
+	 * 這裡沒有任何需要選取的文字，整個面板一律關掉。
+	 */
+	user-select: none;
+	-webkit-user-select: none;
+	/*
+	 * 關掉函式庫自己的進出場過渡：開場的動作由圖片的飛行負責，面板再縮放一次
+	 * 會變成兩段互相打架的動作，而且面板帶著 transform 時量到的位置是變形後的，
+	 * 飛行的起點就會算錯。
+	 */
+	transition: none;
 }
 
 .lightbox__title {
@@ -1458,21 +1470,27 @@ a:hover {
 	/* 圖片不要貼著畫面邊緣，留一點呼吸空間才看得出它是被框起來檢視的。 */
 	padding: var(--space-4);
 	overflow: hidden;
-	cursor: zoom-in;
 	touch-action: none;
 }
 
-.lightbox__frame[data-zoomed="true"] {
+/* 游標分開講：圖片上是縮放，圖片以外的灰色區域是離開。 */
+.lightbox__image {
+	cursor: zoom-in;
+}
+
+.lightbox__frame[data-zoomed="true"] .lightbox__image {
 	cursor: zoom-out;
 }
 
-.lightbox__frame[data-dragging="true"] {
+.lightbox__frame[data-dragging="true"] .lightbox__image {
 	cursor: grabbing;
 }
 
 .lightbox__image {
 	max-width: 100%;
 	max-height: 100%;
+	/* Safari 仍然會把圖片本身當成可拖曳的物件，draggable={false} 擋不掉。 */
+	-webkit-user-drag: none;
 	/*
 	 * 縮放時才過渡，拖曳時不要 —— 拖曳每一幀都會改 transform，加了過渡會變成
 	 * 手放開之後圖片還在慢慢追上來，像在拉橡皮筋。
