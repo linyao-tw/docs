@@ -1372,3 +1372,148 @@ a:hover {
 	margin-block-start: 0;
 	padding: var(--space-8) var(--space-8) var(--space-12);
 }
+
+/* ── 換頁進度列 ───────────────────────────────────────────────────────── */
+
+/*
+ * 用 scaleX 而不是改 width：width 每一幀都會觸發版面重算，而這條列子出現的
+ * 時機正好是瀏覽器最忙的時候。transform 只在合成階段處理。
+ */
+.nav-progress {
+	position: fixed;
+	inset-block-start: 0;
+	inset-inline: 0;
+	z-index: 100;
+	height: 2px;
+	background: var(--control-primary);
+	transform: scaleX(var(--nav-progress, 0));
+	transform-origin: left;
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 0.15s var(--motion-ease-out);
+}
+
+.nav-progress[data-active="true"] {
+	opacity: 1;
+}
+
+/* 收尾時讓它淡出，不要「啪」一聲消失。 */
+.nav-progress[data-done="true"] {
+	opacity: 0;
+	transition:
+		transform 0.15s var(--motion-ease-out),
+		opacity 0.3s var(--motion-ease-out) 0.1s;
+}
+
+/* ── 圖片放大檢視 ─────────────────────────────────────────────────────── */
+
+.lightbox__backdrop {
+	position: fixed;
+	inset: 0;
+	background: oklch(12% 0.01 75 / 0.88);
+}
+
+.lightbox {
+	position: fixed;
+	inset: 0;
+	/*
+	 * 函式庫的對話框是靠 inset 50% 加上 translate(-50%, -50%) 置中的。
+	 * 這裡要的是整個畫面，inset 改成 0 之後那個位移就變成把面板整個推到
+	 * 左上角外面 —— 所以 translate 也必須一起歸零，不能只改 inset。
+	 */
+	translate: none;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	max-height: none;
+	padding: var(--space-4);
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.lightbox__title {
+	margin: 0;
+	padding-inline-end: var(--space-12);
+	color: var(--text-always-white);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-regular);
+	text-align: center;
+}
+
+.lightbox__close {
+	position: absolute;
+	inset-block-start: var(--space-4);
+	inset-inline-end: var(--space-4);
+	z-index: 1;
+}
+
+.lightbox__frame {
+	display: grid;
+	place-items: center;
+	min-height: 0;
+	/* 圖片不要貼著畫面邊緣，留一點呼吸空間才看得出它是被框起來檢視的。 */
+	padding: var(--space-4);
+	overflow: hidden;
+	cursor: zoom-in;
+	touch-action: none;
+}
+
+.lightbox__frame[data-zoomed="true"] {
+	cursor: zoom-out;
+}
+
+.lightbox__frame[data-dragging="true"] {
+	cursor: grabbing;
+}
+
+.lightbox__image {
+	max-width: 100%;
+	max-height: 100%;
+	/*
+	 * 縮放時才過渡，拖曳時不要 —— 拖曳每一幀都會改 transform，加了過渡會變成
+	 * 手放開之後圖片還在慢慢追上來，像在拉橡皮筋。
+	 */
+	transition: transform var(--motion-duration-medium) var(--motion-ease-out);
+	will-change: transform;
+}
+
+.lightbox__frame[data-dragging="true"] .lightbox__image {
+	transition: none;
+}
+
+.lightbox__controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	padding-block-start: var(--space-3);
+}
+
+.lightbox__level {
+	min-width: 4rem;
+	padding: var(--space-1) var(--space-2);
+	background: transparent;
+	border: 0;
+	color: var(--text-always-white);
+	cursor: pointer;
+	font-family: var(--font-family-mono);
+	font-size: var(--font-size-sm);
+	font-variant-numeric: tabular-nums;
+}
+
+.lightbox__level:disabled {
+	cursor: default;
+	opacity: 0.5;
+}
+
+/* 會動的東西都關掉，但資訊本身要留著。 */
+@media (prefers-reduced-motion: reduce) {
+	.nav-progress,
+	.lightbox__image {
+		transition: none;
+	}
+}

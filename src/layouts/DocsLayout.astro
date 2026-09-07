@@ -3,6 +3,7 @@ import type { MarkdownHeading } from "astro";
 import { ClientRouter } from "astro:transitions";
 import { DocsSearch } from "@/components/DocsSearch";
 import Icon from "@/components/Icon.astro";
+import { Lightbox } from "@/components/Lightbox";
 import PageActions from "@/components/PageActions.astro";
 import Sidebar from "@/components/Sidebar.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
@@ -189,8 +190,14 @@ const eyebrow = product.sections.length > 1 ? `${product.name} · ${section.labe
 			被接上。這個事件在首次載入與每一次客戶端導覽都會發出。
 		*/
 		}
+		<Lightbox client:idle />
+
 		<script>
 			import { initDocs } from "@/scripts/docs";
+			import { initProgress } from "@/scripts/progress";
+
+			// 模組只會被求值一次，所以進度列的事件剛好也只掛一次。
+			initProgress();
 			document.addEventListener("astro:page-load", initDocs);
 		</script>
 	</body>
