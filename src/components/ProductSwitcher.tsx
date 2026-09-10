@@ -5,6 +5,8 @@ export interface ProductOption {
 	id: string;
 	name: string;
 	href: string;
+	/** 建置時讀好的一段 SVG，見 `@/lib/mark`。 */
+	mark: string;
 }
 
 interface Props {
@@ -30,7 +32,22 @@ export function ProductSwitcher({ products, current }: Props) {
 				const href = value === null ? undefined : hrefById.get(value);
 				if (href) void navigate(href);
 			}}
-			options={products.map(product => ({ value: product.id, label: product.name }))}
+			options={products.map(product => ({
+				value: product.id,
+				/*
+				 * 標記放在名稱左邊。內容是我們自己在建置時讀進來的檔案，不是使用者輸入。
+				 *
+				 * `textValue` 一定要給：`label` 現在是節點不是字串，少了它，鍵盤打字
+				 * 跳選項與無障礙名稱都會拿不到東西。
+				 */
+				label: (
+					<span className="product-switcher__option">
+						<span className="product-switcher__mark" dangerouslySetInnerHTML={{ __html: product.mark }} />
+						{product.name}
+					</span>
+				),
+				textValue: product.name
+			}))}
 		/>
 	);
 }

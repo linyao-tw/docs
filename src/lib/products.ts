@@ -36,8 +36,10 @@ export interface Product {
 	name: string;
 	/** 一句話說明，用在產品切換器與首頁的清單。 */
 	tagline: string;
-	/** @phosphor-icons/core 的圖示名稱。 */
+	/** @phosphor-icons/core 的圖示名稱。沒有自己的標誌時用它。 */
 	icon: string;
+	/** 產品自己的標誌，public/ 底下的路徑。有的話在切換器上取代 `icon`。 */
+	logo?: string;
 	/**
 	 * 產品內的區塊。只有一個時不顯示區塊切換器，側欄直接就是選單。
 	 * HUAN 有兩個（使用教學／開發者），設計系統只有一個。
@@ -58,6 +60,7 @@ export const PRODUCTS: Product[] = [
 		name: "HUAN 讙",
 		tagline: "雲端媒體播放與數位看板系統",
 		icon: "monitor-play",
+		logo: "/logo/huan.svg",
 		sections: HUAN_SECTIONS
 	},
 	{

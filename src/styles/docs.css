@@ -1022,6 +1022,33 @@ a:hover {
 	border-block-end: var(--border-width-hairline) solid var(--divider-subtle);
 }
 
+/* 標記在名稱左邊，觸發器與選單裡是同一個排法。 */
+.product-switcher__option {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	min-inline-size: 0;
+}
+
+/*
+ * 兩個產品的標記佔同一個方框，名稱才會對齊：一個是自己的標誌，一個是
+ * Phosphor 的圖示，原圖比例不同，靠固定的框加 contain 收齊。
+ */
+.product-switcher__mark {
+	display: grid;
+	flex: none;
+	place-items: center;
+	inline-size: 1.25rem;
+	block-size: 1.25rem;
+	color: var(--icon-secondary);
+}
+
+.product-switcher__mark svg {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: contain;
+}
+
 /* ── 頁面動作（丟給 AI） ──────────────────────────────────────────────── */
 
 .page-actions {
