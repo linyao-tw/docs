@@ -720,16 +720,33 @@ a:hover {
 }
 
 /*
- * 截圖拍的是亮色介面，整片貼在深色頁面上像一塊發光的白板，
- * 讀者的眼睛得在兩種亮度之間反覆適應。稍微壓低亮度，滑過或聚焦時還原。
- * 只調亮度不調色相，顏色仍然是真的。
+ * 產品截圖有亮色與深色兩份，只顯示符合目前主題的那一張。
+ *
+ * 用 display 而不是 opacity：隱藏的那一張如果還佔位置，圖的高度會變成兩倍。
  */
-:root[data-lyds-theme="dark"] .huan-figure img {
+.huan-figure img[data-theme-variant="dark"] {
+	display: none;
+}
+
+:root[data-lyds-theme="dark"] .huan-figure img[data-theme-variant="light"] {
+	display: none;
+}
+
+:root[data-lyds-theme="dark"] .huan-figure img[data-theme-variant="dark"] {
+	display: block;
+}
+
+/*
+ * 沒有深色版的圖（流程圖、示意圖）拍的是亮色底，整片貼在深色頁面上像一塊發光
+ * 的白板，讀者的眼睛得在兩種亮度之間反覆適應。稍微壓低亮度，滑過或聚焦時還原。
+ * 只調亮度不調色相，顏色仍然是真的。有深色版的截圖本來就是深色，不能再壓。
+ */
+:root[data-lyds-theme="dark"] .huan-figure img:not([data-theme-variant]) {
 	filter: brightness(0.86);
 	transition: filter var(--motion-duration-fast) var(--motion-ease-out);
 }
 
-:root[data-lyds-theme="dark"] .huan-figure__zoom:is(:hover, :focus-visible) img {
+:root[data-lyds-theme="dark"] .huan-figure__zoom:is(:hover, :focus-visible) img:not([data-theme-variant]) {
 	filter: none;
 }
 

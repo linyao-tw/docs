@@ -80,7 +80,13 @@ export function Lightbox() {
 			const link = target?.closest<HTMLAnchorElement>("a.huan-figure__zoom");
 			if (!link) return;
 
-			const thumbnail = link.querySelector("img");
+			/*
+			 * 截圖可能亮色深色各放一張，其中一張是 display:none。隱藏的那張量不到
+			 * 尺寸，拿它當飛行起點的話動畫會從畫面左上角冒出來，放大後也會是不對
+			 * 的主題 —— 兩件事都要跟著看得見的那一張走。
+			 */
+			const images = [...link.querySelectorAll("img")];
+			const thumbnail = images.find(image => image.getBoundingClientRect().width > 0) ?? images[0];
 			if (!thumbnail) return;
 
 			event.preventDefault();
@@ -88,7 +94,7 @@ export function Lightbox() {
 			fitted.current = null;
 			opening.current = true;
 			reset();
-			setSource({ src: link.getAttribute("href") ?? thumbnail.src, alt: thumbnail.alt });
+			setSource({ src: thumbnail.getAttribute("src") ?? link.getAttribute("href") ?? thumbnail.src, alt: thumbnail.alt });
 		};
 
 		/*
