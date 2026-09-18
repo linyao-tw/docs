@@ -16,3 +16,4 @@ description: "這裡記錄 HUAN 幾個影響全域的決定，以及做這些決
 | [ADR-0005](/huan/dev/adr/0005-local-first-playback)     | 本機優先播放                                 |
 | [ADR-0006](/huan/dev/adr/0006-electron)                 | 播放器使用 Electron                          |
 | [ADR-0007](/huan/dev/adr/0007-postgres-job-queue)       | 工作佇列用 PostgreSQL，不引入 Redis          |
+| [ADR-0008](/huan/dev/adr/0008-keep-playback-artifacts)  | 播放產物長期保留在物件儲存                   |

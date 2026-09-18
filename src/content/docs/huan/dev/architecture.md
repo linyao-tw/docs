@@ -19,7 +19,7 @@ flowchart LR
 	Server --> DB
 	Server --> RustFS
 	Worker --> DB
-	Worker -->|轉檔 / 縮圖 / 回收| RustFS
+	Worker -->|轉檔 / 縮圖 / 預覽| RustFS
 	Server -.->|WebSocket 通知| Device
 	Device -->|HTTPS 取狀態| Server
 	Device -->|簽章網址下載| RustFS

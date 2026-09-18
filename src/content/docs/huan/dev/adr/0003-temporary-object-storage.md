@@ -1,11 +1,13 @@
 ---
 title: "ADR-0003：物件儲存只做暫存，不當永久素材庫"
-description: "已採用"
+description: "部分被 ADR-0008 取代"
 ---
 
 ## 狀態
 
-已採用
+部分被 [ADR-0008](/huan/dev/adr/0008-keep-playback-artifacts) 取代。
+
+原始檔在轉檔成功後刪除的部分仍然有效；**播放產物回收的部分已經不再執行**，`thumbnail/`、`preview/` 與 `distribution/` 現在都長期保留。底下保留當初的決策與理由，作為紀錄。
 
 ## 背景
 

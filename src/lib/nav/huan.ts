@@ -88,7 +88,8 @@ const DEV: NavNode[] = [
 			{ label: "0004 遞迴分割版面", id: "huan/dev/adr/0004-recursive-split-layout" },
 			{ label: "0005 本機優先播放", id: "huan/dev/adr/0005-local-first-playback" },
 			{ label: "0006 選擇 Electron", id: "huan/dev/adr/0006-electron" },
-			{ label: "0007 PostgreSQL 工作佇列", id: "huan/dev/adr/0007-postgres-job-queue" }
+			{ label: "0007 PostgreSQL 工作佇列", id: "huan/dev/adr/0007-postgres-job-queue" },
+			{ label: "0008 播放產物長期保留", id: "huan/dev/adr/0008-keep-playback-artifacts" }
 		]
 	},
 	{ label: "疑難排解", id: "huan/dev/troubleshooting" }

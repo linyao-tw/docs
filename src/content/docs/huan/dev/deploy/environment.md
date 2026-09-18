@@ -48,23 +48,10 @@ Server 簽出來的網址是給**瀏覽器和裝置**用的。Server 在 Docker 
 | `LOGIN_RATE_LIMIT_MAX`            | `10`                    | 時間窗內允許的失敗次數         |
 | `LOGIN_RATE_LIMIT_WINDOW_SECONDS` | `300`                   |                                |
 | `SIGNED_URL_TTL_SECONDS`          | `900`                   | 簽章網址有效時間               |
-| `DISTRIBUTION_RETENTION_HOURS`    | `24`                    | 全部 ACK 之後播放產物的保留期  |
 | `DEVICE_HEARTBEAT_SECONDS`        | `60`                    | 下發給裝置的 heartbeat 間隔    |
 | `DEVICE_FALLBACK_SYNC_SECONDS`    | `300`                   | 下發給裝置的保底同步間隔       |
 | `DEVICE_MAX_CONCURRENT_DOWNLOADS` | `3`                     | 裝置同時下載的檔案數           |
 | `ADMIN_DIST_DIR`                  | —                       | 設定後由 Server 靜態提供 Admin |
-
-### `DISTRIBUTION_RETENTION_HOURS` 值得想一下
-
-這個值決定「所有裝置都下載完成之後，播放產物還要在 RustFS 上留多久」。
-
-| 值           | 效果                                         |
-| ------------ | -------------------------------------------- |
-| `24`（預設） | 一天內新增裝置還來得及取得素材               |
-| `168`        | 一週                                         |
-| `720`        | 一個月。實務上幾乎不會遇到需要重新上傳的情況 |
-
-調長只是多花儲存空間；調短則會更快遇到「需要重新上傳」的狀態。詳見 [ADR-0003](/huan/dev/adr/0003-temporary-object-storage)。
 
 ## Worker
 

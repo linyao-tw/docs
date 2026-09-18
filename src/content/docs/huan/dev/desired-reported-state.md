@@ -14,6 +14,7 @@ Server 不對裝置下命令，而是宣告一個**目標**：
 	"deviceId": "…",
 	"version": 42,
 	"defaultLayout": { "revisionId": "…", "document": { … } },
+	"idle": { "mode": "brand" | "black" | "image", "imageAssetId": "…" },
 	"schedules": [ … ],
 	"assets": [ { "assetId": "…", "sha256": "…", "downloadPath": "…" } ]
 }
@@ -32,6 +33,8 @@ Server 不對裝置下命令，而是宣告一個**目標**：
 ```
 
 差異由裝置自己彌平：下載、驗證、啟用、回報。
+
+`idle` 是「排程沒命中、又沒有 `defaultLayout` 時螢幕上要出現什麼」。`mode` 是 `image` 時，那個 `imageAssetId` 一定也在 `assets` 清單裡——待命畫面必須在離線時也顯示得出來，所以它跟版面素材走同一條派送路徑。
 
 ```mermaid
 stateDiagram-v2
