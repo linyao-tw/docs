@@ -65,6 +65,19 @@ Server 簽出來的網址是給**瀏覽器和裝置**用的。Server 在 Docker 
 | `WORKER_TMP_DIR`          | 系統暫存目錄 | 轉檔暫存位置     |
 | `WORKER_HEALTH_PORT`      | `4001`       | 存活檢查端點的埠 |
 
+## 可觀測性
+
+Server 與 Worker 都認得，全部選填。沒有設定 `OTEL_EXPORTER_OTLP_ENDPOINT` 時 SDK 完全不載入。說明見[可觀測性](/huan/dev/observability)。
+
+| 變數                          | 預設            | 說明                                               |
+| ----------------------------- | --------------- | -------------------------------------------------- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | —               | OTLP/HTTP 收件端的根網址。設定了才啟用             |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` |                                                    |
+| `OTEL_RESOURCE_ATTRIBUTES`    | —               | 建議設 `deployment.environment.name=production`    |
+| `OTEL_EXPORTER_OTLP_HEADERS`  | —               | 收件端需要驗證時使用                               |
+| `OTEL_SDK_DISABLED`           | `false`         | 設為 `true` 暫時關閉                               |
+| `HUAN_VERSION`                | `dev`           | 映像建置時帶入 commit SHA，成為 trace 上的服務版本 |
+
 ## Admin（建置期）
 
 | 變數                | 說明                                      |

@@ -73,6 +73,7 @@ const DEV: NavNode[] = [
 			{ label: "環境變數", id: "huan/dev/deploy/environment" },
 			{ label: "PostgreSQL", id: "huan/dev/deploy/postgresql" },
 			{ label: "RustFS", id: "huan/dev/deploy/rustfs" },
+			{ label: "可觀測性", id: "huan/dev/observability" },
 			{ label: "GitHub Pages", id: "huan/dev/deploy/github-pages" },
 			{ label: "發布", id: "huan/dev/release" }
 		]
@@ -89,7 +90,8 @@ const DEV: NavNode[] = [
 			{ label: "0005 本機優先播放", id: "huan/dev/adr/0005-local-first-playback" },
 			{ label: "0006 選擇 Electron", id: "huan/dev/adr/0006-electron" },
 			{ label: "0007 PostgreSQL 工作佇列", id: "huan/dev/adr/0007-postgres-job-queue" },
-			{ label: "0008 播放產物長期保留", id: "huan/dev/adr/0008-keep-playback-artifacts" }
+			{ label: "0008 播放產物長期保留", id: "huan/dev/adr/0008-keep-playback-artifacts" },
+			{ label: "0009 OpenTelemetry", id: "huan/dev/adr/0009-opentelemetry" }
 		]
 	},
 	{ label: "疑難排解", id: "huan/dev/troubleshooting" }
